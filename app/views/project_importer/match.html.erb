@@ -1,0 +1,10 @@
+<% form_tag({:action => 'result'}, {:multipart => true}) do %>
+   
+
+    <%= submit_tag t(:button_submit) %>
+<!--    <%= submit_tag t(:button_save_rules_and_submit) %>
+    <%= text_field_tag('rule_name', t(:label_rule_name), {:size => 32, :maxlength => 32, :onfocus => "if(this.value == '#{t(:label_rule_name)}') {this.value = ''}"}) %>
+    --><br/>
+<% end %>
+
+<hr/>

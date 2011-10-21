@@ -1,0 +1,9 @@
+<h2>ProjectImporter#index</h2>
+<% form_tag({:action => 'match'}, {:multipart => true}) do %>
+	<p><label>KIES UW BESTAND</label><br/>
+	<%= file_field_tag 'file', :size => 60%></p>
+
+	
+
+	<%= submit_tag t(:button_upload) %>
+<% end %>
