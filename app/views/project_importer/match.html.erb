@@ -1,5 +1,13 @@
 <% form_tag({:action => 'result'}, {:multipart => true}) do %>
-   
+<table>  
+ 
+<% @samples.each do |sample| %>
+  <tr>
+	 <td>sample</td>    
+  </tr>
+<% end %>
+</table>
+
 
     <%= submit_tag t(:button_submit) %>
 <!--    <%= submit_tag t(:button_save_rules_and_submit) %>
