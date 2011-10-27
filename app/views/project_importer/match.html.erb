@@ -1,18 +1,20 @@
-<% form_tag({:action => 'result'}, {:multipart => true}) do %>
-<table>  
- 
-<% @samples.each do |sample| %>
-  <tr>
-	 <td>sample</td>    
-  </tr>
+<ul>
+<% @headers.each do |x| %>
+<li>
+<%= x %>
+</li>
 <% end %>
-</table>
+</ul>
 
 
-    <%= submit_tag t(:button_submit) %>
-<!--    <%= submit_tag t(:button_save_rules_and_submit) %>
-    <%= text_field_tag('rule_name', t(:label_rule_name), {:size => 32, :maxlength => 32, :onfocus => "if(this.value == '#{t(:label_rule_name)}') {this.value = ''}"}) %>
-    --><br/>
+<br/>
+<br/>
+
+
+<ul>
+<% @samples.each do |a| %>
+<li>
+<%= a %>
+</li>
 <% end %>
-
-<hr/>
+</ul>

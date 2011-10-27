@@ -1,5 +1,6 @@
 require 'fastercsv'
 require 'tempfile'
+require 'csv'
 
 class ProjectImporterController < ApplicationController
   unloadable
@@ -10,39 +11,35 @@ class ProjectImporterController < ApplicationController
   end
 
 def match
-file = params[:file]
+     @parsed_file=CSV::Reader.parse(params[:dump][:file])
+     n=0
 
-@original_filename = file.original_filename
-tmpfile = Tempfile.new("redmine_project_importer")
-if tmpfile
-	tmpfile.write(file.read)
-	tmpfile.close
-	tmpfilename = File.basename(tmpfile.path)
-      if !$tmpfiles
-        $tmpfiles = Hash.new
-      end
-      $tmpfiles[tmpfilename] = tmpfile
-    else
-      flash[:error] = "Cannot save import file."
-      return
-    end
- session[:importer_tmpfile] = tmpfilename
 sample_count = 5
 i = 0
 @samples = []
-FasterCSV.open("C:/Users/Ruben/Desktop/gebruikers", "r") do |row|       
-		@samples[i] = row
-		i += 1
-		if i > sample_count
+
+
+     @parsed_file.each  do |row|
+				
+		if i != 0	
+   		@samples[i] = row
+		end
+
+		if i == 0
+			@headers = row
+		end
+ 
+		
+		if i >= sample_count 
 			break
 		end
-	end
+i = i+1
+		
+        n=n+1       
+     end
+     flash.now[:message]="CSV Import Successful,  #{n} new records added to data base"
+   end
 
-if @samples.size > 0
-      @headers = @samples[0]
-    end
 
 
-
-end
 end
