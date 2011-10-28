@@ -1,5 +1,6 @@
 
 <h2>Projecten en gebruikers importeren</h2>
+
 <% form_for :dump, :url=>{:controller=>"project_importer", :action=>"match"}, :html => { :multipart => true } do |f| -%>
 <table">
    <tr>
@@ -12,10 +13,27 @@
        <%= f.file_field :file -%>
      </td>
    </tr>
-   <tr>
-     <td colspan='2'>
-       <%= submit_tag 'Submit' -%>
-     </td>
-   </tr>
+   
  </table>
+ <br/>
+ <br/>
+ <fieldset title="Modules" >
+ 	<legend>Modules</legend>
+ 	<label><%= check_box_tag "issue_tracking", true, true %> Issue Tracking </label><br/>
+    <label><%= check_box_tag "time_tracking", true, true %> Time Tracking </label><br/>		
+    <label><%= check_box_tag "news", true, true %> News </label><br/>
+    <label><%= check_box_tag "documents", true, true %> Documents </label><br/>	
+    <label><%= check_box_tag "files", true, true %> Files </label><br/>	
+    <label><%= check_box_tag "wiki", true, true %> Wiki </label><br/>	
+    <label><%= check_box_tag "repository", true, true %> Repository </label><br/>	
+    <label><%= check_box_tag "forums", true, true %> Forums </label><br/>	
+    <label><%= check_box_tag "calendar", true, true %> Calendar </label><br/>	
+    <label><%= check_box_tag "gantt", true, true %> Gantt </label><br/>	
+           	
+</fieldset>
+
+<br/>
+       <%= submit_tag 'Submit' -%>
+    
+
 <% end -%>
