@@ -7,7 +7,12 @@ class ProjectImporterController < ApplicationController
 
 
 
+
+
+
   def index
+    @roles = Role.find :all, :order => 'builtin, position'
+    
   end
 
 def match
@@ -15,7 +20,7 @@ def match
      n=0
 
 
-
+ @roles = Role.find :all, :order => 'builtin, position'
   issue_tracking = params[:issue_tracking]
   time_tracking = params[:time_tracking]
   news = params[:news]
@@ -26,8 +31,13 @@ def match
   forums = params[:forums]
   calendar = params[:calendar]
   gantt = params[:gantt]
-
+  bug_tracker = params[:bug_tracker]
+  feature_tracker = params[:feature_tracker]
+  support_tracker = params[:support_tracker]
+  imported_users_role = params[:role]
   sample_count = 5
+  
+  
   i = 0
   @samples = []
      @parsed_file.each  do |row|
@@ -55,4 +65,4 @@ def match
 
 
 
-end
+

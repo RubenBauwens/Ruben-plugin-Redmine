@@ -33,6 +33,19 @@
 </fieldset>
 
 <br/>
+
+<fieldset title="Trackers" >
+ 	<legend>Trackers</legend>
+ 	<label><%= check_box_tag "bug_tracker", true, true %> Bug </label>
+	<label><%= check_box_tag "feature_tracker", true, true %> Feature </label>
+	<label><%= check_box_tag "support_tracker", true, true %> Support </label>
+</fieldset>
+<br/>
+<fieldset title="User roles">
+	<legend>User roles</legend>
+	<label>Imported users: </label>
+	<%= select_tag "role", options_for_select(@roles) %>
+</fieldset>
        <%= submit_tag 'Submit' -%>
     
 
