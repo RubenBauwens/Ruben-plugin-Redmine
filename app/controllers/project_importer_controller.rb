@@ -7,19 +7,21 @@ class ProjectImporterController < ApplicationController
 
 
 
-
-
-
   def index
     @roles = Role.find :all, :order => 'builtin, position'
-    
+    @repositoryTypes = []
+    Redmine::Scm::Base.all.each do |scm|
+    @repositoryTypes << scm 
+   
+    end
   end
 
 def match
      @parsed_file=CSV::Reader.parse(params[:dump][:file])
      n=0
-
-
+    
+   
+@attrs = ["Official code" ,"username", "lastname", "firstname", "email", "groupname", "password"]
  @roles = Role.find :all, :order => 'builtin, position'
   issue_tracking = params[:issue_tracking]
   time_tracking = params[:time_tracking]
@@ -60,7 +62,15 @@ def match
         n=n+1       
      end
    end
+   
+   
+    
      #flash.now[:message]="CSV Import Successful,  #{n} new records added to data base"
+   end
+   
+   def result
+     
+      fields_map = params[:fields_map]
    end
 
 

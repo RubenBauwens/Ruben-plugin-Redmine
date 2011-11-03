@@ -1,4 +1,17 @@
 
+<% form_tag({:action => 'result'}, {:multipart => true}) do %>
+    <fieldset class="box"><legend>Match columns</legend>
+    <% @headers.each do |column| %>
+         <label ><%= column %>:
+           <%= select_tag "fields_map[#{column}]", options_for_select( @attrs ) %></label>      
+    <% end %>
+    </fieldset>
+
+    <%= submit_tag 'Submit' %>
+<br/>
+<% end %>
+
+
 <ul>
 <% @headers.each do |x| %>
 <li>

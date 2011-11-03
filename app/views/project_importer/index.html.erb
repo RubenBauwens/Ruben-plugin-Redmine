@@ -43,8 +43,25 @@
 <br/>
 <fieldset title="User roles">
 	<legend>User roles</legend>
+	<br/>
 	<label>Imported users: </label>
 	<%= select_tag "role", options_for_select(@roles) %>
+	
+	<br/>
+	<br/>
+	
+	<label>Add users from existing group: </label>
+</fieldset>
+<br/>
+<fieldset title ="Repository">
+	<legend>Repository</legend>
+	<br/>
+	<label>Repository type:</label>
+		<%= select_tag "role", options_for_select(@repositoryTypes),:prompt => "Select Type" %>
+	<br/>
+	<br/>
+	<label>BASE URL:</label>
+	<%= text_field_tag "repositoryUrl"%>
 </fieldset>
        <%= submit_tag 'Submit' -%>
     
