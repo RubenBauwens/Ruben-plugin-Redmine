@@ -1,7 +1,7 @@
 
 <h2>Projecten en gebruikers importeren</h2>
 
-<% form_for :dump, :url=>{:controller=>"project_importer", :action=>"match"}, :html => { :multipart => true } do |f| -%>
+<% form_tag({:action => 'match'}, {:multipart => true}) do %>
 <table">
    <tr>
      <td>
@@ -10,7 +10,7 @@
       </label>
      </td>
      <td >
-       <%= f.file_field :file -%>
+       <%= file_field_tag 'file', :size => 60%></p>
      </td>
    </tr>
    
