@@ -1,6 +1,7 @@
 
 <h2>Projecten en gebruikers importeren</h2>
 
+
 <% form_tag({:action => 'match'}, {:multipart => true}) do %>
 <table">
    <tr>
@@ -51,6 +52,16 @@
 	<br/>
 	
 	<label>Add users from existing group: </label>
+	<br/>
+	<ul>
+  <% @groups.each do |group| %>
+      <li>
+        <%= check_box_tag 'group[]', group.id -%>
+        <%= h group -%>
+        <%= select_tag 'role_group[]', options_for_select(@roles) %>
+      </li>
+  <% end %>
+</ul>
 </fieldset>
 <br/>
 <fieldset title ="Repository">
@@ -61,7 +72,7 @@
 	<br/>
 	<br/>
 	<label>BASE URL:</label>
-	<%= text_field_tag "repositoryUrl"%>
+	<%= text_field_tag "repository_url"%>
 </fieldset>
        <%= submit_tag 'Submit' -%>
     

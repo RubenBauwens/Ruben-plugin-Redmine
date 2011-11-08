@@ -11,9 +11,14 @@ class ProjectImporterController < ApplicationController
     @roles = Role.find :all, :order => 'builtin, position'
     @repositoryTypes = []
     Redmine::Scm::Base.all.each do |scm|
-    @repositoryTypes << scm 
+        @repositoryTypes << scm       
+     end
+     
+     
+    @groups = Group.active.find(:all)   
    
-    end
+  
+   
   end
 
 def match
@@ -22,9 +27,13 @@ def match
     
    file = params[:file]
    
+  @selected_groups = Group.find(params[:group]) 
+  @selected_roles =params[:role_group]
+  
+  @rollen = @selected_roles
   
    @parsed_file=CSV::Reader.parse(file)
-@attrs = ["Official code" ,"username", "lastname", "firstname", "email", "groupname", "password"]
+ @attrs = ["Official code" ,"Username", "Lastname", "Firstname", "Email", "Groupname", "Password"]
  @roles = Role.find :all, :order => 'builtin, position'
   issue_tracking = params[:issue_tracking]
   time_tracking = params[:time_tracking]
@@ -43,22 +52,10 @@ def match
   sample_count = 5
   
   
-  @original_filename = file.original_filename
-    tmpfile = Tempfile.new("redmine_user_importer")
-    if tmpfile
-      tmpfile.write(file.read)
-      tmpfile.close
-      tmpfilename = File.basename(tmpfile.path)
-      if !$tmpfiles
-        $tmpfiles = Hash.new
-      end
-      $tmpfiles[tmpfilename] = tmpfile
-    else
-      flash[:error] = "Cannot save import file."
-      return
-    end
-
-    session[:importer_tmpfile] = params[:file].tempfile.to_path.to_s
+ 
+  
+  
+  
   
   i = 0
   @samples = []

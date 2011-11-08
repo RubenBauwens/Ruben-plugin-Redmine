@@ -12,6 +12,15 @@
 
 
 <ul>
+<% @rollen.each do |b| %>
+<li>
+<%= b %>
+</li>
+<% end %>
+</ul>
+
+
+<ul>
 <% @headers.each do |x| %>
 <li>
 <%= x %>
