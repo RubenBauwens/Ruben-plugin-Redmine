@@ -1,3 +1,5 @@
+<%= params.inspect %>
+
 <% form_tag({:action => 'result'}, {:multipart => true}) do %>
     <fieldset class="box"><legend>Match columns</legend>
     <% @headers.each do |column| %>
@@ -12,7 +14,7 @@
 
 
 <ul>
-<% @rollen.each do |b| %>
+<% @x.each do |b| %>
 <li>
 <%= b %>
 </li>

@@ -8,12 +8,14 @@ class ProjectImporterController < ApplicationController
 
 
   def index
-    @roles = Role.find :all, :order => 'builtin, position'
-    @repositoryTypes = []
-    Redmine::Scm::Base.all.each do |scm|
-        @repositoryTypes << scm       
-     end
-     
+    @roles_imported_users = Role.find :all, :order => 'builtin, position'
+    @roles_view = [["--- Not Included ---", '']]
+    roles = Role.find :all, :order => 'builtin, position'
+    roles.each do |role|
+      @roles_view << role
+    end
+    
+   
      
     @groups = Group.active.find(:all)   
    
@@ -27,11 +29,16 @@ def match
     
    file = params[:file]
    
-  @selected_groups = Group.find(params[:group]) 
-  @selected_roles =params[:role_group]
+  @selected_groups = params[:group] 
   
-  @rollen = @selected_roles
   
+  @keys = @selected_groups
+  @x = params[:group]
+ 
+      
+      @repository = Repository.factory(params[:repository_scm])
+     
+ 
    @parsed_file=CSV::Reader.parse(file)
  @attrs = ["Official code" ,"Username", "Lastname", "Firstname", "Email", "Groupname", "Password"]
  @roles = Role.find :all, :order => 'builtin, position'
@@ -49,9 +56,10 @@ def match
   feature_tracker = params[:feature_tracker]
   support_tracker = params[:support_tracker]
   imported_users_role = params[:role]
+  repository_typestring = params[:repository_type]
   sample_count = 5
   
-  
+  @repository_type = repository_typestring
  
   
   

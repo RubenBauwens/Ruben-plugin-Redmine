@@ -46,7 +46,7 @@
 	<legend>User roles</legend>
 	<br/>
 	<label>Imported users: </label>
-	<%= select_tag "role", options_for_select(@roles) %>
+	<%= select_tag "role", options_for_select(@roles_imported_users) %>
 	
 	<br/>
 	<br/>
@@ -56,11 +56,11 @@
 	<ul>
   <% @groups.each do |group| %>
       <li>
-        <%= check_box_tag 'group[]', group.id -%>
-        <%= h group -%>
-        <%= select_tag 'role_group[]', options_for_select(@roles) %>
+       
+       <%= group %>
+       <%= select_tag 'group[]', options_for_select(@roles_view) %>
       </li>
-  <% end %>
+<% end %>
 </ul>
 </fieldset>
 <br/>
@@ -68,7 +68,11 @@
 	<legend>Repository</legend>
 	<br/>
 	<label>Repository type:</label>
-		<%= select_tag "role", options_for_select(@repositoryTypes),:prompt => "Select Type" %>
+		<%= scm_select_tag(@repository) %>
+<% if @repository && ! @repository.class.scm_available %>
+  <br />
+  <em><%= content_tag 'span', l(:text_scm_command_not_available), :class => 'error' %></em>
+<% end %>
 	<br/>
 	<br/>
 	<label>BASE URL:</label>
