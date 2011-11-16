@@ -2,8 +2,10 @@
 <h2>Projecten en gebruikers importeren</h2>
 
 
-<% form_tag({:action => 'match'}, {:multipart => true}) do %>
-<table">
+<% form_tag({:action => 'match'}, {:multipart => true, :id => 'file_form_id'}) do %>
+<fieldset title="File">
+	<legend>File</legend>
+<table>
    <tr>
      <td>
       <label for="dump_file">
@@ -11,12 +13,11 @@
       </label>
      </td>
      <td >
-       <%= file_field_tag 'file', :size => 60%></p>
+       <%= file_field_tag 'file', :size => 500%></p>
      </td>
-   </tr>
-   
+   </tr>   
  </table>
- <br/>
+ </fieldset> 
  <br/>
  <fieldset title="Modules" >
  	<legend>Modules</legend>
@@ -56,9 +57,8 @@
 	<ul>
   <% @groups.each do |group| %>
       <li>
-       
-       <%= group %>
-       <%= select_tag 'group[]', options_for_select(@roles_view) %>
+      
+       <%= group %><%= select_tag 'group[]', options_for_select(@roles_view) %>
       </li>
 <% end %>
 </ul>
@@ -82,3 +82,4 @@
     
 
 <% end -%>
+

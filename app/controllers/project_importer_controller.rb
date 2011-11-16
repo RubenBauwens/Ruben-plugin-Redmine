@@ -2,6 +2,7 @@ require 'fastercsv'
 require 'tempfile'
 require 'csv'
 
+
 class ProjectImporterController < ApplicationController
   unloadable
 
@@ -11,37 +12,28 @@ class ProjectImporterController < ApplicationController
     @roles_imported_users = Role.find :all, :order => 'builtin, position'
     @roles_view = [["--- Not Included ---", '']]
     roles = Role.find :all, :order => 'builtin, position'
+    
     roles.each do |role|
       @roles_view << role
-    end
-    
-   
-     
-    @groups = Group.active.find(:all)   
-   
-  
-   
+    end 
+         
+    @groups = Group.active.find(:all)  
+       
   end
 
-def match
-     
-     n=0
+  def match
+         
+    @keys = @selected_groups
+    @x = params[:group]
+    @testfile = params[:file]
+    file = params[:file]   
+    @selected_groups = params[:group]  
     
-   file = params[:file]
-   
-  @selected_groups = params[:group] 
-  
-  
-  @keys = @selected_groups
-  @x = params[:group]
- 
-      
-      @repository = Repository.factory(params[:repository_scm])
-     
- 
-   @parsed_file=CSV::Reader.parse(file)
+    @repository = Repository.factory(params[:repository_scm])
+     @original_filename = params[:file].original_filename
+    @parsed_file=CSV::Reader.parse(file)
  @attrs = ["Official code" ,"Username", "Lastname", "Firstname", "Email", "Groupname", "Password"]
- @roles = Role.find :all, :order => 'builtin, position'
+ 
   issue_tracking = params[:issue_tracking]
   time_tracking = params[:time_tracking]
   news = params[:news]
@@ -56,14 +48,10 @@ def match
   feature_tracker = params[:feature_tracker]
   support_tracker = params[:support_tracker]
   imported_users_role = params[:role]
-  repository_typestring = params[:repository_type]
+  repository_base_url = params[:repository_url]
   sample_count = 5
-  
-  @repository_type = repository_typestring
- 
-  
-  
-  
+  @repository.root_url=(repository_base_url)
+  @base_url = @repository.url
   
   i = 0
   @samples = []
@@ -82,54 +70,34 @@ def match
 		    	break
 	   	  end
        
-        i = i+1
-		
-        n=n+1       
+        i = i+1         
      end
-   end
-   
+     
    
     
-     #flash.now[:message]="CSV Import Successful,  #{n} new records added to data base"
-   end
+    session[:filename] = file.path
+   end  
    
-   def result
-     tmpfilename = session[:importer_tmpfile]
-      
-      if tmpfilename
-      tmpfile = $tmpfiles[tmpfilename]
-      if tmpfile 
-        flash[:error] = "Tempfile bestaat niet!"
-        return
-      end
-    
-    
+
+   
+  
+      def result
+     @tmpfilename = session[:filename]
+      i = 0
+      sample_count = 5  
+      @samplestest = []   
+     CSV.open(@tmpfilename, 'r', ',') do |row|
+   @samplestest[i] = row
+   i = i+1
+ end
+  
     fields_map = params[:fields_map]
       attrs_map = fields_map.invert
       
-      @parsed_file=CSV::Reader.parse(tmpfilename)
-       @samples = []
-     @parsed_file.each  do |row|
-        
-        if i != 0 
-          @samples[i] = row
-        end
-
-        if i == 0
-          @headers = row
-        end
-  
+     
+     
     
-        if i >= sample_count 
-          break
-        end
-       
-        i = i+1
-    
-        n=n+1       
-     end
    end
-      
   
 
 end

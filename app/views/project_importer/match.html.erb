@@ -1,4 +1,7 @@
 <%= params.inspect %>
+<%= @original_filename.inspect %>
+<br/>
+<%= @test.inspect %>
 
 <% form_tag({:action => 'result'}, {:multipart => true}) do %>
     <fieldset class="box"><legend>Match columns</legend>
