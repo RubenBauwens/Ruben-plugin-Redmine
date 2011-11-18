@@ -7,6 +7,8 @@ class ProjectImporterController < ApplicationController
   unloadable
 
 
+  before_filter :require_admin
+  
 
   def index
     @roles_imported_users = Role.find :all, :order => 'builtin, position'
@@ -76,30 +78,59 @@ class ProjectImporterController < ApplicationController
    
     
     session[:filename] = file.path
-   end  
+   end  #match
    
 
    
   
       def result
      @tmpfilename = session[:filename]
+      
+      attrs_map = params[:fields_map].invert
+      
       i = 0
-      sample_count = 5  
+      
+     
+     @headers = []
       @samplestest = []   
      CSV.open(@tmpfilename, 'r', ',') do |row|
-   @samplestest[i] = row
-   i = i+1
- end
+       if i == 0
+       @headers = row
+       else
+         usernameheader = attrs_map['Username']
+         lastnameheader = attrs_map['Lastname']
+         firstnameheader = attrs_map['Firstname']
+         passwordheader = attrs_map['Password']
+         mailheader = attrs_map['Email']
+         @groupnameheader = attrs_map['Groupname']
+        
+         user = User.find_by_login(row[@headers.index(usernameheader)])
+         unless user
+          user = User.new(:language => Setting.default_language, :mail_notification => Setting.default_notification_option)
+           user.login = row[@headers.index(usernameheader)]
+           user.password = row[@headers.index(passwordheader)]
+           user.lastname = row[@headers.index(lastnameheader)]
+           user.firstname = row[@headers.index(firstnameheader)]
+           user.password_confirmation = row[@headers.index(passwordheader)]
+           user.mail = row[@headers.index(mailheader)]
+           user.admin = 1
+            if user.save
+            user.pref.save
+         end #unless
+       @errors = user.errors.full_messages
+          end
+       end   # if else
+       i = i + 1      
+    end  #do
   
-    fields_map = params[:fields_map]
-      attrs_map = fields_map.invert
+     
       
      
      
     
-   end
+   end #result
   
 
-end
+end #class
 
 

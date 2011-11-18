@@ -13,7 +13,7 @@
       </label>
      </td>
      <td >
-       <%= file_field_tag 'file', :size => 500%></p>
+       <%= file_field_tag 'file', :size => 500 %></p>
      </td>
    </tr>   
  </table>
@@ -45,23 +45,24 @@
 <br/>
 <fieldset title="User roles">
 	<legend>User roles</legend>
-	<br/>
-	<label>Imported users: </label>
-	<%= select_tag "role", options_for_select(@roles_imported_users) %>
 	
+	<table>
+		<tr>
+	<td width="110">Imported users: </td>
+	<td width="110"><%= select_tag "role", options_for_select(@roles_imported_users) %></td>
+	</tr>
 	<br/>
-	<br/>
+		
+	<tr><td width="200"> users from existing group: </td></tr>
 	
-	<label>Add users from existing group: </label>
-	<br/>
-	<ul>
+	
   <% @groups.each do |group| %>
-      <li>
-      
-       <%= group %><%= select_tag 'group[]', options_for_select(@roles_view) %>
-      </li>
+      <tr>
+      <td width="110"><%= group %></td>
+       <td width="110"><%= select_tag 'group[]', options_for_select(@roles_view) %> </td>
+      </tr>
 <% end %>
-</ul>
+</table>
 </fieldset>
 <br/>
 <fieldset title ="Repository">
