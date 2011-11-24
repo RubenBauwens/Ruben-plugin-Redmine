@@ -31,26 +31,56 @@ class ProjectImporterController < ApplicationController
     file = params[:file]   
     @selected_groups = params[:group]  
     
-    @repository = Repository.factory(params[:repository_scm])
+    
      @original_filename = params[:file].original_filename
     @parsed_file=CSV::Reader.parse(file)
  @attrs = ["Official code" ,"Username", "Lastname", "Firstname", "Email", "Groupname", "Password"]
+ dismodules = []
  
-  issue_tracking = params[:issue_tracking]
-  time_tracking = params[:time_tracking]
-  news = params[:news]
-  documents = params[:documents]
-  files = params[:files]
-  wiki = params[:wiki]
-  repository = params[:repository]
-  forums = params[:forums]
-  calendar = params[:calendar]
-  gantt = params[:gantt]
+ 
+  unless params[:issue_tracking]
+    dismodules << :issue_tracking
+  end
+  
+  unless params[:time_tracking]
+    dismodules << :time_tracking
+  end
+  
+  unless params[:news]
+     dismodules << :news
+  end
+  unless params[:documents]
+     dismodules << :documents
+  end
+  
+  unless params[:files]
+     dismodules << :files
+  end
+  
+  unless params[:wiki]
+     dismodules << :wiki
+  end
+  unless params[:repository]
+     dismodules << :repository
+  end
+  unless params[:forums]
+     dismodules << :forums
+  end
+  unless params[:calendar]
+     dismodules << :calendar
+  end
+  unless params[:gantt]
+     dismodules << :gantt
+  end
+  session[:disabledmodules] = dismodules
   bug_tracker = params[:bug_tracker]
   feature_tracker = params[:feature_tracker]
   support_tracker = params[:support_tracker]
   
-  repository_base_url = params[:repository_url]
+  
+  repo = Repository.factory(params[:repository_scm])
+  repo.root_url = params[:repository_url]
+  session[:repository] = repo
   sample_count = 5
   session[:users_role] = params[:role_user]
   
@@ -83,12 +113,14 @@ class ProjectImporterController < ApplicationController
    
   
       def result
+        
+      @disabledmods =  session[:disabledmodules]
      tmpfilename = session[:filename]
       role_users = Role.find_by_name(session[:users_role])
       roles = []
       roles << role_users
       attrs_map = params[:fields_map].invert
-      
+     @project_repository = session[:repository]
       i = 0
       username_header = attrs_map['Username']
       lastname_header = attrs_map['Lastname']
@@ -118,6 +150,12 @@ class ProjectImporterController < ApplicationController
           project = Project.new
           project.name = row[@index_groupname]
           project.identifier = row[@index_groupname] 
+          project.is_public = false
+          @disabledmods.each do |mod|
+            project.disable_module!(mod)
+          end
+          #project.repository = @project_repository
+          #project.repository.save
           project.save 
           counter_new_projects = counter_new_projects + 1       
         end # unless project
@@ -148,6 +186,7 @@ class ProjectImporterController < ApplicationController
           
           member = Member.new(:user => user, :roles => roles)
           project.members << member
+          @test = project.enabled_module_names
        end   # if else
        i = i + 1      
     end  #do
