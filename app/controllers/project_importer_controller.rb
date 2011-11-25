@@ -37,7 +37,7 @@ class ProjectImporterController < ApplicationController
  @attrs = ["Official code" ,"Username", "Lastname", "Firstname", "Email", "Groupname", "Password"]
  dismodules = []
  
- 
+ # fill array with disabled modules
   unless params[:issue_tracking]
     dismodules << :issue_tracking
   end
@@ -73,9 +73,20 @@ class ProjectImporterController < ApplicationController
      dismodules << :gantt
   end
   session[:disabledmodules] = dismodules
-  bug_tracker = params[:bug_tracker]
-  feature_tracker = params[:feature_tracker]
-  support_tracker = params[:support_tracker]
+  
+  
+  trackers = []  # fill array with selected trackers
+ if params[:bug_tracker]
+   trackers << "Bug"
+ end
+ if params[:feature_tracker]
+   trackers << "Feature"
+ end
+  if params[:support_tracker]
+    trackers << "Support"
+  end
+  
+  session[:selectedtrackers] = trackers
   
   
   repo = Repository.factory(params[:repository_scm])
@@ -113,8 +124,15 @@ class ProjectImporterController < ApplicationController
    
   
       def result
+        trackers = []
         
-      @disabledmods =  session[:disabledmodules]
+      
+       selected_trackers = session[:selectedtrackers]
+
+      selected_trackers.each do |tracker|
+        trackers << Tracker.find_by_name(tracker)
+      end
+      disabledmods =  session[:disabledmodules]
      tmpfilename = session[:filename]
       role_users = Role.find_by_name(session[:users_role])
       roles = []
@@ -151,9 +169,11 @@ class ProjectImporterController < ApplicationController
           project.name = row[@index_groupname]
           project.identifier = row[@index_groupname] 
           project.is_public = false
-          @disabledmods.each do |mod|
+          disabledmods.each do |mod|
             project.disable_module!(mod)
           end
+          
+          project.trackers = trackers
           #project.repository = @project_repository
           #project.repository.save
           project.save 
@@ -186,7 +206,7 @@ class ProjectImporterController < ApplicationController
           
           member = Member.new(:user => user, :roles => roles)
           project.members << member
-          @test = project.enabled_module_names
+        
        end   # if else
        i = i + 1      
     end  #do
