@@ -1,6 +1,6 @@
 <%= params.inspect %>
 <%= @original_filename.inspect %>
-<br/>
+<br/><%= @selected_groups.inspect %>
 <%= @test.inspect %>
 
 <% form_tag({:action => 'result'}, {:multipart => true}) do %>
@@ -19,14 +19,6 @@
 <br/>
 <% end %>
 
-
-<ul>
-<% @x.each do |b| %>
-<li>
-<%= b %>
-</li>
-<% end %>
-</ul>
 
 
 <ul>

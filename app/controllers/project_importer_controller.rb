@@ -25,11 +25,11 @@ class ProjectImporterController < ApplicationController
 
   def match
          
-    @keys = @selected_groups
-    @x = params[:group]
+    
+    
     @testfile = params[:file]
     file = params[:file]   
-    @selected_groups = params[:group]  
+    session[:group_roles] = params[:group]  
     
     
      @original_filename = params[:file].original_filename
@@ -125,8 +125,16 @@ class ProjectImporterController < ApplicationController
   
       def result
         trackers = []
-        
-      
+      groups = Group.active.find(:all)  
+      group_roles = session[:group_roles]
+      x = 0
+      group_hash = Hash.new
+      group_roles.each do |role|
+        if role != ""
+          group_hash[groups[x]] = role
+        end
+        x = x + 1
+      end
        selected_trackers = session[:selectedtrackers]
 
       selected_trackers.each do |tracker|
@@ -207,6 +215,13 @@ class ProjectImporterController < ApplicationController
           member = Member.new(:user => user, :roles => roles)
           project.members << member
         
+        group_hash.each_pair do |group, role|
+         m = Member.new
+         m.principal = group
+         m.roles << Role.find_by_name(role)
+         project.members << m
+         
+        end # end do
        end   # if else
        i = i + 1      
     end  #do
