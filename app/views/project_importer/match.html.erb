@@ -1,11 +1,12 @@
-<%= params.inspect %>
+<%= @testfile %>
+<%= @headers.class %>
 <%= @original_filename.inspect %>
 <br/><%= @selected_groups.inspect %>
-<%= @test.inspect %>
+<%= @testje %>
 
 <% form_tag({:action => 'result'}, {:multipart => true}) do %>
     <fieldset class="box"><legend>Match columns</legend>
-    <% @headers.each do |column| %>
+    <% @headers.each do |column| %>    
     <% matched = ''
 	        @attrs.each do |k,v| if v.to_s.casecmp(column.to_s.sub(" ") {|sp| "_" }) == 0 or k.to_s.casecmp(column.to_s) == 0 then matched = v end end
 	        %>
@@ -21,23 +22,12 @@
 
 
 
-<ul>
-<% @headers.each do |x| %>
-<li>
-<%= x %>
-</li>
-<% end %>
-</ul>
-
-
-<br/>
-<br/>
-
+<%= @headers.join(', ') %>
 
 <ul>
 <% @samples.each do |a| %>
 <li>
-<%= a %>
+<%= a.join(', ') %>
 </li>
 <% end %>
 </ul>

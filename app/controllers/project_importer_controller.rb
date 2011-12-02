@@ -27,14 +27,14 @@ class ProjectImporterController < ApplicationController
          
     
     
-    @testfile = params[:file]
+    
     file = params[:file]   
+     session[:filename] = file.path
     session[:group_roles] = params[:group]  
     
     
-     @original_filename = params[:file].original_filename
-    @parsed_file=CSV::Reader.parse(file)
- @attrs = ["Official code" ,"Username", "Lastname", "Firstname", "Email", "Groupname", "Password"]
+     
+ @attrs = ["Username", "Lastname", "Firstname", "Email", "Groupname", "Password"]
  dismodules = []
  
  # fill array with disabled modules
@@ -89,41 +89,36 @@ class ProjectImporterController < ApplicationController
   session[:selectedtrackers] = trackers
   
   
-  repo = Repository.factory(params[:repository_scm])
-  repo.root_url = params[:repository_url]
-  session[:repository] = repo
+  session[:repository] = params[:repository_scm]
+  session[:repository_base_url] = params[:repository_url]
+  
   sample_count = 5
   session[:users_role] = params[:role_user]
   
   i = 0
-  @samples = []
-     @parsed_file.each  do |row|
-				
-		    if i != 0	
-   	    	@samples[i] = row
-		    end
+  options = { :headers=>true, :return_headers => true }
+@samples = FasterCSV.read(session[:filename], options).to_a
 
-		    if i == 0
-		    	@headers = row
-		    end
-  
-		
-		    if i >= sample_count 
-		    	break
-	   	  end
-       
-        i = i+1         
-     end
+if @samples.size > 0
+  @headers = @samples.shift 
+end  
+     
+     
+     
      
    
     
-    session[:filename] = file.path
+  
    end  #match
    
 
    
   
       def result
+        validation = false
+        repository = session[:repository]
+  @repository_base_url = session[:repository_base_url]
+  
         trackers = []
       groups = Group.active.find(:all)  
       group_roles = session[:group_roles]
@@ -159,19 +154,30 @@ class ProjectImporterController < ApplicationController
     
      @headers = []
       @samplestest = []   
-      FasterCSV.foreach(tmpfilename) do |row|
+     options = { :headers=>true, :return_headers => true }
+    @data = FasterCSV.read(tmpfilename, options).to_a
+
+if @data.size > 0
+  @headers = @data.shift 
+end  
    
-       if i == 0
-       @headers = row
+   if !username_header or !lastname_header or !firstname_header or !password_header or !mail_header or !groupname_header
+     validation = false
+     
+   else
+     validation = true
+   end 
+       if validation
        @index_username = @headers.index(username_header)
        @index_password = @headers.index(password_header)
        @index_lastname = @headers.index(lastname_header)
        @index_firsname = @headers.index(firstname_header)
        @index_mail = @headers.index(mail_header)
        @index_groupname = @headers.index(groupname_header)
-       
-       else       
+      
+     @data.each do |row|     
         project = Project.find_by_name(row[@index_groupname])
+       
         unless project
           project = Project.new
           project.name = row[@index_groupname]
@@ -185,6 +191,9 @@ class ProjectImporterController < ApplicationController
           #project.repository = @project_repository
           #project.repository.save
           project.save 
+          @naam = project.name
+          @identifier = project.identifier
+         @errors = project.errors.full_messages
           counter_new_projects = counter_new_projects + 1       
         end # unless project
         
@@ -206,30 +215,39 @@ class ProjectImporterController < ApplicationController
            # project.members << user
            # user.memberships << @role_users
            user.save
-            
+            member = Member.new(:user => user, :roles => roles)
+          project.members << member
         counter_new_users = counter_new_users + 1
       
        
           end   #unless
           
-          member = Member.new(:user => user, :roles => roles)
-          project.members << member
+          
         
+        project.repository = Repository.factory(repository)
+        #project.repository.root_url = @repository_base_url
+        project.repository.url =  'https://hogent.be'
+        @project = project
+       # project.repository.save
+       @errors = project.repository.errors.full_messages
+       
+       
         group_hash.each_pair do |group, role|
          m = Member.new
          m.principal = group
          m.roles << Role.find_by_name(role)
          project.members << m
-         
+      
         end # end do
-       end   # if else
-       i = i + 1      
+       
     end  #do
   
-     
-     flash[:notice] = "Added #{counter_new_projects} new projects and #{counter_new_users} new users !"
-     
-     
+     flash[:warning] = "Added #{counter_new_projects} new projects and #{counter_new_users} new users !"
+     #flash[:notice] = "Added #{counter_new_projects} new projects and #{counter_new_users} new users !"
+     #end 
+     else
+       flash[:warning] = "Your matching is not correct, go back to adjust!"
+     end# validation = true
     
    end #result
   
