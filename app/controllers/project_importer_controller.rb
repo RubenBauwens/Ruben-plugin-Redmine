@@ -28,7 +28,8 @@ class ProjectImporterController < ApplicationController
     
     
     
-    file = params[:file]   
+    file = params[:file]  
+    if file 
      session[:filename] = file.path
     session[:group_roles] = params[:group]  
     
@@ -106,7 +107,10 @@ end
      
      
      
-   
+   else
+     flash[:error] = "Please select a file!"
+     redirect_to request.referrer
+   end
     
   
    end  #match
@@ -198,7 +202,11 @@ end
         end # unless project
         
          user = User.find_by_login(row[@index_username])
-         unless user
+         if user
+         User.delete(user)
+         end
+         
+         #unless user
           user = User.new(:language => Setting.default_language, :mail_notification => Setting.default_notification_option)
            user.login = row[@index_username]
            user.password = row[@index_password]
@@ -220,7 +228,7 @@ end
         counter_new_users = counter_new_users + 1
       
        
-          end   #unless
+         # end   #unless
           
           
         
