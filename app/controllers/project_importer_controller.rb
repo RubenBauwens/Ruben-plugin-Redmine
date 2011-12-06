@@ -250,14 +250,15 @@ end
           
           
         
-        project.repository = Repository.factory(repository)
-        #project.repository.root_url = @repository_base_url
-        project.repository.url =  'https://hogent.be'
-        @project = project
-       # project.repository.save
+        repo = Repository.factory(repository)
+       repo.root_url = @repository_base_url
+        repo.url =  'https://hogent.be' # hier dan url?
+       repo.project = project
+       repo.save
+       project.repository = repo
        @errors = project.repository.errors.full_messages
        
-       
+       @testrep = repo.to_yaml
         group_hash.each_pair do |group, role|
          m = Member.new
          m.principal = group
@@ -270,9 +271,13 @@ end
     
     if @existing_projects.size > 0
       flash[:error] = "An error occurred, see details for more information!"
+     names = []   
     @existing_projects.each do |pr|
-            
+        
+        if !names.include?(pr.name)
       @failed_projects_array_strings << "#{pr.name} already exists, added #{pr.members.size} users"
+        end #if
+        names << pr.name
     end # do
     end #if 
      @result_string = "Added #{counter_new_projects} new projects, added #{new_users} new users and overwritted #{replaced_users_count} users!"
