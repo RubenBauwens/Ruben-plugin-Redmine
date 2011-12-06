@@ -122,8 +122,17 @@ end
         validation = false
         repository = session[:repository]
   @repository_base_url = session[:repository_base_url]
-  
+        replaced_users_count = 0
+        new_users = 0
         trackers = []
+        handled_rows = 0
+        added_project_names = []
+        @failed_projects_array_strings = []
+        failed_existing_projects_count = 0
+      
+
+        
+      @existing_projects = []
       groups = Group.active.find(:all)  
       group_roles = session[:group_roles]
       x = 0
@@ -140,7 +149,7 @@ end
         trackers << Tracker.find_by_name(tracker)
       end
       disabledmods =  session[:disabledmodules]
-     tmpfilename = session[:filename]
+     filename = session[:filename]
       role_users = Role.find_by_name(session[:users_role])
       roles = []
       roles << role_users
@@ -159,7 +168,7 @@ end
      @headers = []
       @samplestest = []   
      options = { :headers=>true, :return_headers => true }
-    @data = FasterCSV.read(tmpfilename, options).to_a
+    @data = FasterCSV.read(filename, options).to_a
 
 if @data.size > 0
   @headers = @data.shift 
@@ -179,12 +188,18 @@ end
        @index_mail = @headers.index(mail_header)
        @index_groupname = @headers.index(groupname_header)
       
-     @data.each do |row|     
+     @data.each do |row|
         project = Project.find_by_name(row[@index_groupname])
-       
-        unless project
+       handled_rows = handled_rows + 1
+       if project
+         failed_existing_projects_count = failed_existing_projects_count + 1
+         if !added_project_names.include?(project.name)
+         @existing_projects << project
+         end
+       else
           project = Project.new
           project.name = row[@index_groupname]
+          added_project_names << project.name
           project.identifier = row[@index_groupname] 
           project.is_public = false
           disabledmods.each do |mod|
@@ -203,7 +218,10 @@ end
         
          user = User.find_by_login(row[@index_username])
          if user
+         replaced_users_count = replaced_users_count + 1
          User.delete(user)
+         else
+           new_users = new_users + 1
          end
          
          #unless user
@@ -225,7 +243,7 @@ end
            user.save
             member = Member.new(:user => user, :roles => roles)
           project.members << member
-        counter_new_users = counter_new_users + 1
+       
       
        
          # end   #unless
@@ -249,13 +267,19 @@ end
         end # end do
        
     end  #do
-  
-     flash[:warning] = "Added #{counter_new_projects} new projects and #{counter_new_users} new users !"
-     #flash[:notice] = "Added #{counter_new_projects} new projects and #{counter_new_users} new users !"
-     #end 
+    
+    if @existing_projects.size > 0
+      flash[:error] = "An error occurred, see details for more information!"
+    @existing_projects.each do |pr|
+            
+      @failed_projects_array_strings << "#{pr.name} already exists, added #{pr.members.size} users"
+    end # do
+    end #if 
+     @result_string = "Added #{counter_new_projects} new projects, added #{new_users} new users and overwritted #{replaced_users_count} users!"
+   
      else
-       flash[:warning] = "Your matching is not correct, go back to adjust!"
-     end# validation = true
+      @result_string = "Your matching is not correct, go back to adjust!"
+     end
     
    end #result
   
