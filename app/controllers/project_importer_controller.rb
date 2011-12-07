@@ -119,9 +119,11 @@ end
    
   
       def result
+        
+       #Project.delete_all
         validation = false
         repository = session[:repository]
-  @repository_base_url = session[:repository_base_url]
+  repository_base_url = session[:repository_base_url]
         replaced_users_count = 0
         new_users = 0
         trackers = []
@@ -197,6 +199,7 @@ end
          @existing_projects << project
          end
        else
+         base_url = repository_base_url
           project = Project.new
           project.name = row[@index_groupname]
           added_project_names << project.name
@@ -213,7 +216,17 @@ end
           @naam = project.name
           @identifier = project.identifier
          @errors = project.errors.full_messages
-          counter_new_projects = counter_new_projects + 1       
+          counter_new_projects = counter_new_projects + 1      
+          repo = Repository.factory(repository)
+          repo.root_url = repository_base_url
+          repo.url =  repository_base_url
+          repo.url = repo.url << project.name # hier dan url?
+          repo.project = project
+      
+       repo.save
+       project.repository = repo
+       @errors = project.repository.errors.full_messages
+        
         end # unless project
         
          user = User.find_by_login(row[@index_username])
@@ -250,15 +263,8 @@ end
           
           
         
-        repo = Repository.factory(repository)
-       repo.root_url = @repository_base_url
-        repo.url =  'https://hogent.be' # hier dan url?
-       repo.project = project
-       repo.save
-       project.repository = repo
-       @errors = project.repository.errors.full_messages
-       
-       @testrep = repo.to_yaml
+      
+      
         group_hash.each_pair do |group, role|
          m = Member.new
          m.principal = group
