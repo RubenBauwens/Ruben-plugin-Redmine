@@ -1,7 +1,25 @@
+<style type="text/css">
+.inputfile{
+	
+	width: 800px;
+    height: 22px;
+}
 
+.dropdown{
+	
+	width: 135px;
+    height: 22px;
+}
+
+.legendcss{  
+	font-size: 14px;
+	font-weight:bold;
+ }
+
+ </style>
 <% form_tag({:action => 'match'}, {:multipart => true, :id => 'file_form_id'}) do %>
 <fieldset title="File">
-	<legend>File</legend>
+	<legend class="legendcss">File</legend>
 <table>
    <tr>
      <td>
@@ -10,14 +28,17 @@
       </label>
      </td>
      <td >
-       <%= file_field_tag 'file', :size => 500 %>
+     	
+       <%= file_field_tag 'file', :class => 'inputfile' %>
+       
      </td>
    </tr>   
  </table>
  </fieldset> 
  <br/>
- <fieldset title="Modules" >
- 	<legend>Modules</legend>
+ <fieldset title="Select modules to enable" >
+ 	<legend class="legendcss">Modules</legend>
+ 	
  	<label><%= check_box_tag "issue_tracking", true, true %> Issue Tracking </label><br/>
     <label><%= check_box_tag "time_tracking", true, true %> Time Tracking </label><br/>		
     <label><%= check_box_tag "news", true, true %> News </label><br/>
@@ -33,43 +54,43 @@
 
 <br/>
 
-<fieldset title="Trackers" >
- 	<legend>Trackers</legend>
+<fieldset title="Select trackers" >
+	
+ 	<legend class="legendcss">Trackers</legend>
  	<label><%= check_box_tag "bug_tracker", true, true %> Bug </label>
 	<label><%= check_box_tag "feature_tracker", true, true %> Feature </label>
 	<label><%= check_box_tag "support_tracker", true, true %> Support </label>
 </fieldset>
 <br/>
-<fieldset title="User roles">
-	<legend>User roles</legend>
-	
+<fieldset title="Adjust user roles">
+	<legend class="legendcss">User roles</legend>	
 	<table>
 		<tr>
-	<td width="110">Imported users: </td>
-	<td width="110"><%= select_tag "role_user", options_for_select(@roles_imported_users) %></td>
+	<td>Imported users: </td>
+	<td><%= select_tag "role_user", options_for_select(@roles_imported_users), :class => 'dropdown' %></td>
 	</tr>
 	<br/>
 		
-	<tr><td width="200"> users from existing group: </td></tr>
+	<tr><td> Users from existing group: </td></tr>
 	
 	
   <% @groups.each do |group| %>
       <tr>
-      <td width="110"><%= group %></td>
-       <td width="110"><%= select_tag 'group[]', options_for_select(@roles_view) %> </td>
+      <td><%= group %></td>
+       <td><%= select_tag 'group[]', options_for_select(@roles_view), :class => 'dropdown' %> </td>
       </tr>
 <% end %>
 </table>
 </fieldset>
 <br/>
-<fieldset title ="Repository">
-	<legend>Repository</legend>
+<fieldset title ="Select repository">
+	<legend class="legendcss">Repository</legend>
 	<table>
 		<tr>
-			<td width="110">
+			<td>
 	<label>Repository type:</label>
 			</td>
-			<td width="110">
+			<td>
 		<%= scm_select_tag(@repository) %>
 <% if @repository && ! @repository.class.scm_available %>
   <br />
@@ -78,10 +99,10 @@
 </td>
 	</tr>
 	<tr>
-		<td width="110">
+		<td>
 	<label>BASE URL:</label>
 	</td>
-	<td width="110">
+	<td>
 	<%= text_field_tag 'repository_url'%>
 	</td>
 	</tr>

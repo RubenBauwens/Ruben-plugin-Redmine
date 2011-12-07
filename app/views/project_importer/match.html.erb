@@ -3,9 +3,20 @@
 <%= @original_filename.inspect %>
 <br/><%= @selected_groups.inspect %>
 <%= @testje %>
+<style type="text/css">
+.legendcss{  
+	font-size: 14px;
+	font-weight:bold;
+ }
+ 
+ .fieldscss{
+ 	background-color:#f6f6f6;
 
+ }
+ </style>
 <% form_tag({:action => 'result'}, {:multipart => true}) do %>
-    <fieldset class="box"><legend>Match columns</legend>
+    <fieldset class="fieldscss"><legend class="legendcss">Columns matching</legend>
+    	<title>Match headers with the right properties</title>
     <% @headers.each do |column| %>    
     <% matched = ''
 	        @attrs.each do |k,v| if v.to_s.casecmp(column.to_s.sub(" ") {|sp| "_" }) == 0 or k.to_s.casecmp(column.to_s) == 0 then matched = v end end
