@@ -98,18 +98,30 @@ class ProjectImporterController < ApplicationController
   
   i = 0
   options = { :headers=>true, :return_headers => true }
-@samples = FasterCSV.read(session[:filename], options).to_a
+@headers = []
+@samples = []
+      begin
+        @samples = FasterCSV.read(session[:filename], options).to_a
 
-if @samples.size > 0
-  @headers = @samples.shift 
-end  
+        if @samples.size > 0
+        @headers = @samples.shift 
+        end  
+      rescue FasterCSV::MalformedCSVError => e
+            flash[:error] = "Error in file! <br />
+            It has to be a CSV-file, and has to look like: <br />
+            username,lastname,firstname,email,groupname,password  <br />
+            801278,Mayer,John,john.mayer@example.com,projectname,smi748s
+           "
+            
+      end # begin/rescue
      
-     
+     flash.discard(:error)
      
      
    else
-     flash[:error] = "Please select a file!"
-     redirect_to request.referrer
+    
+      redirect_to 'javascript:history.go(-1)'
+      
    end
     
   
@@ -121,6 +133,7 @@ end
       def result
         
        #Project.delete_all
+       
         validation = false
         repository = session[:repository]
   repository_base_url = session[:repository_base_url]
@@ -210,6 +223,14 @@ end
           end
           
           project.trackers = trackers
+          group_hash.each_pair do |group, role|
+            m = Member.new
+            m.principal = group
+            m.roles << Role.find_by_name(role)
+            project.members << m
+      
+          end # end do
+          
           #project.repository = @project_repository
           #project.repository.save
           project.save 
@@ -260,19 +281,7 @@ end
       
        
          # end   #unless
-          
-          
-        
-      
-      
-        group_hash.each_pair do |group, role|
-         m = Member.new
-         m.principal = group
-         m.roles << Role.find_by_name(role)
-         project.members << m
-      
-        end # end do
-       
+               
     end  #do
     
     if @existing_projects.size > 0
@@ -286,7 +295,7 @@ end
         names << pr.name
     end # do
     end #if 
-     @result_string = "Added #{counter_new_projects} new projects, added #{new_users} new users and overwritted #{replaced_users_count} users!"
+     @result_string = "Added #{counter_new_projects} new projects, added #{new_users} new users and overwritten #{replaced_users_count} users!"
    
      else
       @result_string = "Your matching is not correct, go back to adjust!"
