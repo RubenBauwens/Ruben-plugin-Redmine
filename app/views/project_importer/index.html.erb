@@ -1,7 +1,7 @@
 <style type="text/css">
 .inputfile{
 	
-	width: 800px;
+	width: 250px;
     height: 22px;
 }
 
@@ -16,11 +16,16 @@
 	font-weight:bold;
  }
  
+ .validation{
+ 	
+ 	 color: red;
+ }
+ 
  
 
  </style>
 <% form_tag({:action => 'match'}, {:multipart => true, :id => 'file_form_id'}) do %>
-<fieldset title="File">
+<fieldset >
 	<legend class="legendcss">File</legend>
 <table>
    <tr>
@@ -30,7 +35,8 @@
       </label>
      </td>
      <td >     	
-       <%= file_field_tag 'file', :class => 'inputfile' %>       
+       <%= file_field_tag 'file', :class => 'inputfile' %>   
+       <label title="A file is required!" class="validation">*</label>    
      </td>
     
    </tr>   

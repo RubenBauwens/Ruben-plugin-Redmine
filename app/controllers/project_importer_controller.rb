@@ -106,6 +106,11 @@ class ProjectImporterController < ApplicationController
         if @samples.size > 0
         @headers = @samples.shift 
         end  
+        
+        if @headers.size < 6
+          flash.now[:error] = "The CSV-file has too few columns! <br /> 
+          The CSV-file must contain a column for: username, password, firstname, lastname, email and projectname!"
+        end
       rescue FasterCSV::MalformedCSVError => e
             flash[:error] = "Error in file! <br />
             It has to be a CSV-file, and has to look like: <br />
@@ -181,7 +186,9 @@ class ProjectImporterController < ApplicationController
       counter_new_projects = 0
     
      @headers = []
-      @samplestest = []   
+      @samplestest = [] 
+      
+      begin  
      options = { :headers=>true, :return_headers => true }
     @data = FasterCSV.read(filename, options).to_a
 
@@ -285,7 +292,7 @@ end
     end  #do
     
     if @existing_projects.size > 0
-      flash[:error] = "An error occurred, see details for more information!"
+      flash.now[:warning] = "An error occurred, see details for more information!"
      names = []   
     @existing_projects.each do |pr|
         
@@ -295,11 +302,14 @@ end
         names << pr.name
     end # do
     end #if 
-     @result_string = "Added #{counter_new_projects} new projects, added #{new_users} new users and overwritten #{replaced_users_count} users!"
+     flash.now[:notice] = "Added #{counter_new_projects} new projects, added #{new_users} new users and overwritten #{replaced_users_count} users!"
    
      else
-      @result_string = "Your matching is not correct, go back to adjust!"
+      flash.now[:error] = "Your matching is not correct, go back to adjust! <br /> The CSV-file must contain a column for: username, password, firstname, lastname, email and projectname!"
      end
+     rescue Exception
+       flash.now[:error] = "Something went wrong! <br/> The fields in the CSV-file may not be nil!"
+     end #begin /rescue
     
    end #result
   
