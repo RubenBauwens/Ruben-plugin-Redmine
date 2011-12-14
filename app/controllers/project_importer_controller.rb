@@ -9,6 +9,7 @@ class ProjectImporterController < ApplicationController
   
 
   def index
+     Project.delete_all
     @roles_imported_users = Role.find :all, :order => 'builtin, position'
     @roles_view = [["--- Not Included ---", '']]
     roles = Role.find :all, :order => 'builtin, position'
@@ -135,7 +136,7 @@ class ProjectImporterController < ApplicationController
   
       def result
         
-       #Project.delete_all
+      
        
         validation = false
         repository = session[:repository]
@@ -248,6 +249,7 @@ end
           repo.url =  repository_base_url
           repo.url = repo.url << project.name # hier dan url?
           repo.project = project
+          repo.project_id = project.identifier
       
        repo.save
        project.repository = repo
@@ -307,8 +309,8 @@ end
       flash.now[:error] = "Your matching is not correct, go back to adjust! <br /> The CSV-file must contain a column for: username, password, firstname, lastname, email and projectname!"
      end
      rescue Exception
-       flash.now[:error] = "Something went wrong! <br/> The fields in the CSV-file may not be nil!"
-     end #begin /rescue
+       flash.now[:error] = "Something went wrong! <br/> The fields in the CSV-file may not be nil!" 
+    end #begin /rescue
     
    end #result
   
