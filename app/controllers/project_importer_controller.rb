@@ -11,6 +11,7 @@ class ProjectImporterController < ApplicationController
   
 
   def index
+   
     @roles_imported_users = Role.find :all, :order => 'builtin, position'
     @roles_view = [["--- Not Included ---", '']]
     roles = Role.find :all, :order => 'builtin, position'
@@ -183,7 +184,7 @@ class ProjectImporterController < ApplicationController
       groupname_header = attrs_map['Groupname']
       counter_new_users = 0
       counter_new_projects = 0
-    begin
+   # begin
      @headers = []
       @samplestest = []   
      options = { :headers=>true, :return_headers => true }
@@ -297,17 +298,17 @@ end
         if !names.include?(pr.name)
       @failed_projects_array_strings << "#{pr.name} already exists, added #{pr.members.size} users"
         end #if
-        names << pr.name
+        names << pr.name 
     end # do
     end #if 
-     flash.now[:notice] = "Added #{counter_new_projects} new projects, added #{new_users} new users and overwritten #{replaced_users_count} users!"
+     flash.now[:notice] = "- Added <b><u>#{counter_new_projects}</u></b> new projects <br />- Added <b><u>#{new_users}</b></u> new users <br />- Overwritten <b><u>#{replaced_users_count}</b></u> users!"
    
      else
       flash.now[:error] = "Your matching is not correct, go back to adjust!"
      end
-    rescue Exception => e
-      flash.now[:error] = e.message
-    end
+    #rescue Exception => e
+     # flash.now[:error] = e.message
+    #end
    end #result
   
 
