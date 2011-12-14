@@ -1,7 +1,5 @@
 require 'fastercsv'
-require 'tempfile'
-require 'csv'
-
+require 'socket'
 
 class ProjectImporterController < ApplicationController
   unloadable
@@ -14,7 +12,7 @@ class ProjectImporterController < ApplicationController
     @roles_imported_users = Role.find :all, :order => 'builtin, position'
     @roles_view = [["--- Not Included ---", '']]
     roles = Role.find :all, :order => 'builtin, position'
-    
+    @test = Socket.gethostbyname(Socket.gethostname).first
     roles.each do |role|
       @roles_view << role
     end 
@@ -253,6 +251,7 @@ end
       
        repo.save
        project.repository = repo
+      
        @errors = project.repository.errors.full_messages
         
         end # unless project

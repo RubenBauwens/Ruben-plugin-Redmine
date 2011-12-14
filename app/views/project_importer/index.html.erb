@@ -1,3 +1,12 @@
+
+<script src="http://ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js" type="text/javascript">
+	$(document).ready(function() {
+ 
+      $("#repository_url").val('blamlj');
+  
+  });
+
+</script>
 <style type="text/css">
 .inputfile{
 	
@@ -24,6 +33,7 @@
  
 
  </style>
+ <%= @test.inspect %>
 <% form_tag({:action => 'match'}, {:multipart => true, :id => 'file_form_id'}) do %>
 <fieldset >
 	<legend class="legendcss">File</legend>
@@ -110,7 +120,7 @@
 	<label>BASE URL:</label>
 	</td>
 	<td>
-	<%= text_field_tag 'repository_url'%>
+	<%= text_field_tag 'repository_url' %>
 	</td>
 	</tr>
 	</table>
