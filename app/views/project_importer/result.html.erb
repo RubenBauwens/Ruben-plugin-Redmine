@@ -1,0 +1,29 @@
+<style type="text/css">
+   ul {
+    
+     color: red;
+   }
+   
+   label {
+   	color: red;
+   }
+   </style>
+
+<h4><%= @result_string %></h4>
+
+
+<br/>
+<br/>
+<%= @failed_projects_string %>
+<br/>
+<br/>
+<% if @failed_projects_array_strings.size > 0 %>
+<label> Details: </label>
+<ul>
+<% @failed_projects_array_strings.each do |project| %>
+<li>
+<%= project %>
+</li>
+<% end %>
+</ul>
+<% end %>
