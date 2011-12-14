@@ -1,5 +1,7 @@
 require 'fastercsv'
-require 'socket'
+require 'tempfile'
+require 'csv'
+
 
 class ProjectImporterController < ApplicationController
   unloadable
@@ -9,11 +11,10 @@ class ProjectImporterController < ApplicationController
   
 
   def index
-     Project.delete_all
     @roles_imported_users = Role.find :all, :order => 'builtin, position'
     @roles_view = [["--- Not Included ---", '']]
     roles = Role.find :all, :order => 'builtin, position'
-    @test = Socket.gethostbyname(Socket.gethostname).first
+    
     roles.each do |role|
       @roles_view << role
     end 
@@ -137,7 +138,6 @@ class ProjectImporterController < ApplicationController
       def result
         
       
-       
         validation = false
         repository = session[:repository]
   repository_base_url = session[:repository_base_url]
@@ -183,11 +183,9 @@ class ProjectImporterController < ApplicationController
       groupname_header = attrs_map['Groupname']
       counter_new_users = 0
       counter_new_projects = 0
-    
+    begin
      @headers = []
-      @samplestest = [] 
-      
-      begin  
+      @samplestest = []   
      options = { :headers=>true, :return_headers => true }
     @data = FasterCSV.read(filename, options).to_a
 
@@ -253,7 +251,6 @@ end
       
        repo.save
        project.repository = repo
-      
        @errors = project.repository.errors.full_messages
         
         end # unless project
@@ -306,15 +303,12 @@ end
      flash.now[:notice] = "Added #{counter_new_projects} new projects, added #{new_users} new users and overwritten #{replaced_users_count} users!"
    
      else
-      flash.now[:error] = "Your matching is not correct, go back to adjust! <br /> The CSV-file must contain a column for: username, password, firstname, lastname, email and projectname!"
+      flash.now[:error] = "Your matching is not correct, go back to adjust!"
      end
-     rescue Exception
-       flash.now[:error] = "Something went wrong! <br/> The fields in the CSV-file may not be nil!" 
-    end #begin /rescue
-    
+    rescue Exception => e
+      flash.now[:error] = e.message
+    end
    end #result
   
 
 end #class
-
-

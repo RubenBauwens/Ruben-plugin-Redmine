@@ -24,7 +24,7 @@
 	        @attrs.each do |k,v| if v.to_s.casecmp(column.to_s.sub(" ") {|sp| "_" }) == 0 or k.to_s.casecmp(column.to_s) == 0 then matched = v end end
 	        %>
          <label class="tabular"><%= column %>:
-		 <%= select_tag "fields_map[#{column}]", "<option value=\"\">#{l(:option_ignore)}</option>" + 
+		 <%= select_tag "fields_map[#{column}]", "<option value=\"\">Ignore</option>" + 
 				options_for_select( @attrs, matched ) %></label>     
     <% end %>
     </fieldset>
