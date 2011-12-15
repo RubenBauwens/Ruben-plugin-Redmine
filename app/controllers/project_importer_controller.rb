@@ -11,7 +11,7 @@ class ProjectImporterController < ApplicationController
   
 
   def index
-   
+  # Project.delete_all
     @roles_imported_users = Role.find :all, :order => 'builtin, position'
     @roles_view = [["--- Not Included ---", '']]
     roles = Role.find :all, :order => 'builtin, position'
@@ -184,12 +184,15 @@ class ProjectImporterController < ApplicationController
       groupname_header = attrs_map['Groupname']
       counter_new_users = 0
       counter_new_projects = 0
-   # begin
+   begin
      @headers = []
       @samplestest = []   
+      begin
      options = { :headers=>true, :return_headers => true }
     @data = FasterCSV.read(filename, options).to_a
-
+    rescue Exception => e
+      flash.now[:error] = e.message
+    end
 if @data.size > 0
   @headers = @data.shift 
 end  
@@ -219,6 +222,7 @@ end
        else
          base_url = repository_base_url
           project = Project.new
+          project.members = []
           project.name = row[@index_groupname]
           added_project_names << project.name
           project.identifier = row[@index_groupname] 
@@ -228,32 +232,36 @@ end
           end
           
           project.trackers = trackers
+          @testgroep = Hash.new
+           @testgroep = []
           group_hash.each_pair do |group, role|
             m = Member.new
             m.principal = group
+            m.project = project
             m.roles << Role.find_by_name(role)
             project.members << m
-      
+           
           end # end do
           
           #project.repository = @project_repository
           #project.repository.save
           project.save 
           @naam = project.name
-          @identifier = project.identifier
+       
          @errors = project.errors.full_messages
           counter_new_projects = counter_new_projects + 1      
           repo = Repository.factory(repository)
-          repo.root_url = repository_base_url
-          repo.url =  repository_base_url
-          repo.url = repo.url << project.name # hier dan url?
-          repo.project = project
-          repo.project_id = project.identifier
+          #if repo and repository_base_url != ""
+           # repo.root_url = repository_base_url
+           #repo.project_id = project.identifier
+           # repo.url =  repository_base_url
+           # repo.url = repo.url << project.name # hier dan url?
+           # repo.project = project
+            
       
-       repo.save
-       project.repository = repo
-       @errors = project.repository.errors.full_messages
-        
+           # repo.save
+           # project.repository = repo
+           #end
         end # unless project
         
          user = User.find_by_login(row[@index_username])
@@ -264,8 +272,8 @@ end
            new_users = new_users + 1
          end
          
-         #unless user
-          user = User.new(:language => Setting.default_language, :mail_notification => Setting.default_notification_option)
+        
+           user = User.new(:language => Setting.default_language, :mail_notification => Setting.default_notification_option)
            user.login = row[@index_username]
            user.password = row[@index_password]
            user.lastname = row[@index_lastname]
@@ -275,18 +283,14 @@ end
            user.admin = 0
            
            
-           # r = Role.givable.find_by_id(Setting.new_project_user_role_id.to_i) || Role.givable.first
-           # m = Member.new(:user => User.current, :roles => [r])
-           # @project.members << m
-           # project.members << user
-           # user.memberships << @role_users
+          
            user.save
             member = Member.new(:user => user, :roles => roles)
           project.members << member
        
       
        
-         # end   #unless
+       
                
     end  #do
     
@@ -306,9 +310,9 @@ end
      else
       flash.now[:error] = "Your matching is not correct, go back to adjust!"
      end
-    #rescue Exception => e
-     # flash.now[:error] = e.message
-    #end
+    rescue Exception => e
+      flash.now[:error] = e.message
+    end
    end #result
   
 
