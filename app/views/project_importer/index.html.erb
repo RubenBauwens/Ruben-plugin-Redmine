@@ -92,31 +92,7 @@
 </table>
 </fieldset>
 <br/>
-<fieldset title ="Select repository">
-	<legend class="legendcss">Repository</legend>
-	<table>
-		<tr>
-			<td>
-	<label>Repository type:</label>
-			</td>
-			<td>
-		<%= scm_select_tag(@repository) %>
-<% if @repository && ! @repository.class.scm_available %>
-  <br />
-  <em><%= content_tag 'span', l(:text_scm_command_not_available), :class => 'error' %></em>
-<% end %>
-</td>
-	</tr>
-	<tr>
-		<td>
-	<label>BASE URL:</label>
-	</td>
-	<td>
-	<%= text_field_tag 'repository_url' %>
-	</td>
-	</tr>
-	</table>
-</fieldset>
+
        <%= submit_tag 'Submit'  -%>
     
 

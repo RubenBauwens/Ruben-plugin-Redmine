@@ -1,8 +1,4 @@
-<%= @testfile %>
-<%= @headers.class %>
-<%= @original_filename.inspect %>
-<br/><%= @selected_groups.inspect %>
-<%= @testje %>
+
 <style type="text/css">
 .legendcss{  
 	font-size: 14px;
@@ -35,12 +31,3 @@
 <% end %>
 
 
-<%= @headers.join(', ') %>
-
-<ul>
-<% @samples.each do |a| %>
-<li>
-<%= a.join(', ') %>
-</li>
-<% end %>
-</ul>
